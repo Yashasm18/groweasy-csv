@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "The Node + Express + TypeScript backend is created here in Phases 0-2 (see MASTER_BLUEPRINT.md Part IV). Structure spec: MASTER_BLUEPRINT.md Part I §3. Build the extraction core FIRST.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "multer": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.1.1",
+    "eslint": "^10.6.0",
+    "prettier": "^3.9.5",
+    "tsx": "^4.23.0",
+    "typescript": "^7.0.2"
+  }
+}

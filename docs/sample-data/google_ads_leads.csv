@@ -1,0 +1,9 @@
+Lead ID;Timestamp;Campaign;Ad Group;Full Name;User Email;User Phone;City;Lead Status;GCLID
+GA-501;15/06/2026 10:30;Brand-Search;Exact-Match;Rohit Sharma;rohit.sharma@gmail.com;09811223344;Gurgaon;Interested - call back;Cj0KCQjw1
+GA-502;15/06/2026 13:12;Realestate-Generic;Sarjapur;Meera Joshi;meera.joshi@gmail.com;9822011223;Bangalore;No answer;Cj0KCQjw2
+GA-503;16/06/2026 09:05;Brand-Search;Exact-Match;Sameer Khan;sameer.khan@yahoo.in;+91 90080 12345;Noida;Wrong number;Cj0KCQjw3
+GA-504;16/06/2026 15:40;Realestate-Generic;Meridian;Anjali Rao;anjali.rao@gmail.com;9765001122;Mumbai;Booked - token paid;Cj0KCQjw4
+GA-505;17/06/2026 11:22;Brand-Search;Phrase-Match;Nikhil Verma;;9900887766;Pune;Follow up next week;Cj0KCQjw5
+GA-506;17/06/2026 17:55;Realestate-Generic;Eden;Pooja Gupta;pooja.gupta@outlook.com;+919812004455;Hyderabad;Switched off;Cj0KCQjw6
+GA-507;18/06/2026 08:48;Brand-Search;Exact-Match;Aditya Menon;aditya.menon@gmail.com;9877665544;Kochi;Not interested;Cj0KCQjw7
+GA-508;18/06/2026 14:10;Realestate-Generic;Sarjapur;Ritu Agarwal;ritu.agarwal@gmail.com;08801122334;Delhi;Interested, hot lead;Cj0KCQjw8
