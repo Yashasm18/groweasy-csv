@@ -437,8 +437,8 @@ Pick from Part V in priority order; each is independent. Suggested high-value se
 
 | Phase | Status | Gate tag | Notes |
 |---|---|---|---|
-| 0 Foundation | ☐ todo | `gate-0-foundation` | Monorepo, domain model, config, express bootstrap |
-| 1 Parsing | ☐ todo | `gate-1-parsing` | Upload + PapaParse + contract (pre-AI) |
+| 0 Foundation | ☑ done | `gate-0-foundation` | Monorepo, domain model, config, express bootstrap |
+| 1 Parsing | ☑ done | `gate-1-parsing` | Upload + PapaParse + contract (pre-AI) |
 | 2 Extraction | ☐ todo | `gate-2-extraction` | **The graded core** — LLM + validator |
 | 3 Frontend | ☐ todo | `gate-3-frontend` | 4-step wizard |
 | 4 UX | ☐ todo | `gate-4-ux` | Progress, errors, responsive, dark mode |

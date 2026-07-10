@@ -4,6 +4,8 @@ import cors from "cors";
 import { config } from "./config";
 import { logger } from "./util/logger";
 
+import { importRouter } from "./routes/import";
+
 const app = express();
 
 app.use(cors({
@@ -12,6 +14,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+app.use("/api/import", importRouter);
 
 // Basic health check route
 app.get("/health", (req, res) => {

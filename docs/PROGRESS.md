@@ -2,7 +2,7 @@
 
 *The authoritative, session-by-session build log. `MASTER_BLUEPRINT.md` Part VI mirrors the top-level status of this file. Update this at the end of **every** session, before the phase's gate is tagged.*
 
-*Status: pre-build blueprint. No phase started. Docs + directory scaffold only.*
+*Status: Phase 1 complete. Foundation, CSV parsing, and API skeleton done. Ready for Phase 2.*
 
 ---
 
@@ -10,7 +10,7 @@
 | Gate | Meaning | State |
 |---|---|---|
 | Gate 0 | Foundation & scaffolding (monorepo, domain model, config, express bootstrap) | ☑ |
-| Gate 1 | CSV parsing + `/api/import` contract (pre-AI) | ☐ |
+| Gate 1 | CSV parsing + `/api/import` contract (pre-AI) | ☑ |
 | Gate 2 | **Extraction core** — Gemini + validator (the graded heart) | ☐ |
 | Gate 3 | Frontend 4-step wizard, local end-to-end | ☐ |
 | Gate 4 | UX: progress, errors, responsive, dark mode | ☐ |
@@ -25,6 +25,7 @@
 | Date | Phase | Work done | Checked on sample CSVs? | Commit / tag | Notes |
 |---|---|---|---|---|---|
 | 2026-07-10 | 0 | Foundation & Scaffolding | N/A | `gate-0-foundation` | Monorepo created, strict TS config, domain model mirrored, logger and config set, Express bootstrapped with health endpoint. |
+| 2026-07-10 | 1 | CSV Parsing & API Skeleton | Yes | `gate-1-parsing` | Implemented `csvParser` with PapaParse, deduplication, and fallback. Wired up `/api/import` via Multer, tested against all 4 CSV samples. |
 
 ---
 
