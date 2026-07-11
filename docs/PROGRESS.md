@@ -3,15 +3,30 @@
 *The authoritative, session-by-session build log. `MASTER_BLUEPRINT.md` Part VI mirrors the top-level status of this file. Update this at the end of **every** session, before the phase's gate is tagged.*
 
 *Status: Phase 1 complete. Foundation, CSV parsing, and API skeleton done. Ready for Phase 2.*
+*Status: Phase 2 complete. AI extraction engine and backend integration finished. Ready for Phase 3.*
 
 ---
+
+## Overall Status: Phase 2 Complete 🟢
+
+## Completed Phases
+1. **Phase 0: Monorepo & Express Bootstrap** (Done)
+2. **Phase 1: CSV Upload & Shallow Validation** (Done)
+3. **Phase 2: Backend AI Extraction** (Done)
+   - Integrated Google Gemini GenAI SDK.
+   - Built deterministic regex fallback validators for date, email, phone, and enum mappings.
+   - Added concurrency pool with exponential backoff for rate limiting.
+   - Wired up `/api/import` to `extractAndValidate`.
+   - Tested successfully against all sample CSVs.
+
+## Current Phase: Phase 3 (Next Up)
 
 ## Gate status
 | Gate | Meaning | State |
 |---|---|---|
 | Gate 0 | Foundation & scaffolding (monorepo, domain model, config, express bootstrap) | ☑ |
 | Gate 1 | CSV parsing + `/api/import` contract (pre-AI) | ☑ |
-| Gate 2 | **Extraction core** — Gemini + validator (the graded heart) | ☐ |
+| Gate 2 | **Extraction core** — Gemini + validator (the graded heart) | ☑ |
 | Gate 3 | Frontend 4-step wizard, local end-to-end | ☐ |
 | Gate 4 | UX: progress, errors, responsive, dark mode | ☐ |
 | Gate 5 | Bonuses & hardening (optional) | ☐ |

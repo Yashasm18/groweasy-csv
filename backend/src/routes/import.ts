@@ -2,7 +2,8 @@ import { Router, Request, Response } from "express";
 import multer from "multer";
 import { config } from "../config";
 import { parseCsv } from "../services/csv/csvParser";
-import { CrmLead, ImportResult, SkippedRow } from "../domain/crm";
+import { GeminiProvider } from "../services/llm/geminiProvider";
+import { extractAndValidate } from "../services/extract/extractor";
 import { logger } from "../util/logger";
 import crypto from "crypto";
 
@@ -13,7 +14,9 @@ const upload = multer({
   limits: { fileSize: config.MAX_FILE_MB * 1024 * 1024 },
 });
 
-importRouter.post("/", upload.single("file"), async (req: Request, res: Response) => {
+const llmProvider = new GeminiProvider();
+
+importRouter.post("/", upload.single("file"), async (req: Request, res: Response): Promise<void> => {
   const reqId = crypto.randomUUID();
   try {
     if (!req.file) {
@@ -34,59 +37,30 @@ importRouter.post("/", upload.single("file"), async (req: Request, res: Response
       return;
     }
 
-    const rawRows = parseCsv(buffer);
+    let rows = [];
+    try {
+      rows = parseCsv(buffer);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message || "Failed to parse CSV" });
+      return;
+    }
 
-    if (rawRows.length === 0) {
+    if (rows.length === 0) {
       res.status(400).json({ error: "No valid rows found in the CSV." });
       return;
     }
 
-    // P1.2 Passthrough: shallow-map raw rows to 15 fields (no AI)
-    const records: CrmLead[] = [];
-    const skipped: SkippedRow[] = [];
-
-    // Helper to find a value case-insensitively for the shallow map
-    const getVal = (cells: Record<string, string>, keys: string[]) => {
-      const lowerCells = Object.fromEntries(Object.entries(cells).map(([k, v]) => [k.toLowerCase(), v]));
-      for (const k of keys) {
-        if (lowerCells[k]) return lowerCells[k];
-      }
-      return "";
-    };
-
-    for (const row of rawRows) {
-      const { cells } = row;
-      const lead: CrmLead = {
-        created_at: getVal(cells, ["created_at", "date", "created"]),
-        name: getVal(cells, ["name", "full name", "first name"]),
-        email: getVal(cells, ["email", "e-mail", "email address", "e-mail id"]),
-        country_code: "",
-        mobile_without_country_code: getVal(cells, ["phone", "mobile", "contact", "mob no."]),
-        company: getVal(cells, ["company", "firm", "organization"]),
-        city: getVal(cells, ["city"]),
-        state: getVal(cells, ["state"]),
-        country: getVal(cells, ["country"]),
-        lead_owner: getVal(cells, ["owner", "assigned to"]),
-        crm_status: "",
-        crm_note: getVal(cells, ["notes", "remarks", "remark", "comments"]),
-        data_source: getVal(cells, ["source", "campaign", "project"]),
-        possession_time: getVal(cells, ["possession", "possession_time"]),
-        description: getVal(cells, ["description", "requirement"]),
-      };
-
-      records.push(lead);
-    }
-
-    const summary = {
-      total: rawRows.length,
-      parsed: records.length,
-      skipped: skipped.length,
-    };
-
-    const result: ImportResult = { summary, records, skipped };
+    // Phase 2: AI Extraction Core
+    const extractionResult = await extractAndValidate(rows, llmProvider);
     
-    logger.info("Import successful (pre-AI)", { reqId, ...summary });
-    res.status(200).json(result);
+    logger.info("Import extraction successful", { 
+      reqId, 
+      total: extractionResult.summary.totalRows,
+      success: extractionResult.summary.successCount,
+      skipped: extractionResult.summary.skippedCount
+    });
+
+    res.status(200).json(extractionResult);
   } catch (error: any) {
     logger.error("Error processing import", { reqId, error: error.message, stack: error.stack });
     res.status(500).json({ error: "Internal Server Error during import." });
