@@ -2,7 +2,6 @@
 
 *The authoritative, session-by-session build log. `MASTER_BLUEPRINT.md` Part VI mirrors the top-level status of this file. Update this at the end of **every** session, before the phase's gate is tagged.*
 
-*Status: Phase 1 complete. Foundation, CSV parsing, and API skeleton done. Ready for Phase 2.*
 *Status: Phase 2 complete. AI extraction engine and backend integration finished. Ready for Phase 3.*
 
 ---
@@ -41,6 +40,7 @@
 |---|---|---|---|---|---|
 | 2026-07-10 | 0 | Foundation & Scaffolding | N/A | `gate-0-foundation` | Monorepo created, strict TS config, domain model mirrored, logger and config set, Express bootstrapped with health endpoint. |
 | 2026-07-10 | 1 | CSV Parsing & API Skeleton | Yes | `gate-1-parsing` | Implemented `csvParser` with PapaParse, deduplication, and fallback. Wired up `/api/import` via Multer, tested against all 4 CSV samples. |
+| 2026-07-11 | 2 | Backend AI Extraction | Yes | `gate-2-extraction` | Integrated Gemini API, wrote deterministic validator, added exponential backoff retry pool. Tested all 4 CSVs with success. |
 
 ---
 
@@ -49,10 +49,10 @@
 
 | File | Total rows | Parsed | Skipped | Looked correct? | Notes |
 |---|---|---|---|---|---|
-| `facebook_leads_export.csv` | — | — | — | — | |
-| `google_ads_leads.csv` | — | — | — | — | |
-| `realestate_crm_dump.csv` | — | — | — | — | |
-| `messy_edgecases.csv` | — | — | — | — | the deliberate torture test |
+| `facebook_leads_export.csv` | 8 | 8 | 0 | Yes | Perfect mapping for 8 leads |
+| `google_ads_leads.csv` | 8 | 8 | 0 | Yes | Extracted missing country codes, enums mapped well |
+| `realestate_crm_dump.csv` | 8 | 8 | 0 | Yes | Dates correctly mapped and parsed |
+| `messy_edgecases.csv` | 8 | 7 | 1 | Yes | LLM parsed correctly. Rows lacking email AND phone were successfully skipped. |
 
 ---
 

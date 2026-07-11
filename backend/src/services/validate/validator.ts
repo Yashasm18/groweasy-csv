@@ -60,6 +60,9 @@ export function extractPhone(rawStr: string): { countryCode: string, mobile: str
     
     // strip leading 0s from mobile
     mobile = mobile.replace(/^0+/, "");
+    
+    if (mobile.length < 6) return null;
+    
     return { cc, mobile, raw: p };
   };
 
