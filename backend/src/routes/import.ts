@@ -7,6 +7,7 @@ import { logger } from "../util/logger";
 import crypto from "crypto";
 import os from "os";
 import fs from "fs";
+import readline from "readline";
 
 export const importRouter = Router();
 
@@ -80,14 +81,24 @@ importRouter.post("/", upload.single("file"), async (req: Request, res: Response
       return;
     }
 
+    // Calculate total rows quickly for accurate progress bar
+    let totalLines = 0;
+    const rl = readline.createInterface({
+      input: fs.createReadStream(tempFilePath),
+      crlfDelay: Infinity
+    });
+    for await (const line of rl) {
+      if (line.trim()) totalLines++;
+    }
+    const estimatedTotal = Math.max(1, totalLines - 1);
+
     // Phase 2: AI Extraction Core using STREAMING parser
     const extractionResult = await extractAndValidateStream(tempFilePath, llmProvider, (done) => {
       if (jobId) {
         const client = clients.get(jobId);
         if (client) {
-          // Total is unknown during streaming, so we send what we have processed so far.
-          // The frontend will show "Processing row X..."
-          client.write(`data: ${JSON.stringify({ done, total: "unknown" })}\n\n`);
+          // Send accurate total instead of "unknown"
+          client.write(`data: ${JSON.stringify({ done, total: estimatedTotal })}\n\n`);
         }
       }
     });
