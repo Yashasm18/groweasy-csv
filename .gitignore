@@ -3,3 +3,4 @@ node_modules
 dist
 .next
 *.log
+MASTER_BLUEPRINT.md
