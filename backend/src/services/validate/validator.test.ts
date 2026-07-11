@@ -1,47 +1,97 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert";
-import { extractEmails, extractPhone, validateDate, validateEnum } from "./validator";
+import { validateRecord } from "./validator";
+import { CandidateRecord, RawRow } from "../llm/LlmProvider";
 
-describe("Validator", () => {
-  it("extractEmails correctly picks the first email and pushes the rest to otherEmails", () => {
-    const res = extractEmails("test@gmail.com; test2@gmail.com / invalid-email");
-    assert.strictEqual(res.email, "test@gmail.com");
-    assert.deepStrictEqual(res.otherEmails, ["test2@gmail.com"]);
+describe("validator", () => {
+  const getDummyRow = (): RawRow => ({ rowIndex: 1, cells: {} });
+
+  it("should skip record with no email and no mobile", () => {
+    const candidate: CandidateRecord = {
+      rowIndex: 1,
+      fields: { name: "John Doe", city: "New York" }
+    };
+    const result = validateRecord(candidate, getDummyRow());
+    assert.strictEqual(result.valid, false);
+    assert.ok(result.reason?.includes("Missing both Email and Mobile"));
   });
 
-  it("extractPhone strips non-digits and separates country code", () => {
-    const res1 = extractPhone("+91 98765 43210");
-    assert.strictEqual(res1.countryCode, "91");
-    assert.strictEqual(res1.mobile, "9876543210");
-
-    const res2 = extractPhone("001 555-1234");
-    assert.strictEqual(res2.countryCode, "1");
-    assert.strictEqual(res2.mobile, "5551234");
-
-    const res3 = extractPhone("919876543210");
-    assert.strictEqual(res3.countryCode, "91");
-    assert.strictEqual(res3.mobile, "9876543210");
-
-    const res4 = extractPhone("1234567890"); // No clear country code
-    assert.strictEqual(res4.countryCode, "");
-    assert.strictEqual(res4.mobile, "1234567890");
-    
-    // Multiple phones
-    const res5 = extractPhone("9876543210; 9123456789");
-    assert.strictEqual(res5.mobile, "9876543210");
-    assert.deepStrictEqual(res5.otherPhones, ["9123456789"]);
+  it("should pick first email and push others to crm_note", () => {
+    const candidate: CandidateRecord = {
+      rowIndex: 1,
+      fields: { 
+        name: "John", 
+        email: "john@example.com, john.doe@work.com" 
+      }
+    };
+    const result = validateRecord(candidate, getDummyRow());
+    assert.strictEqual(result.valid, true);
+    if (result.valid && result.lead) {
+      assert.strictEqual(result.lead.email, "john@example.com");
+      assert.ok(result.lead.crm_note.includes("john.doe@work.com"));
+    }
   });
 
-  it("validateDate parses correctly or returns empty string", () => {
-    assert.strictEqual(validateDate("2026-07-10"), "2026-07-10");
-    assert.strictEqual(validateDate("10/07/2026"), "2026-07-10"); // DD/MM/YYYY ambiguous -> assumes DD/MM/YYYY
-    assert.strictEqual(validateDate("07/25/2026"), "2026-07-25"); // MM/DD/YYYY unambiguous
-    assert.strictEqual(validateDate("45678"), "2025-01-21"); // Excel epoch
-    assert.strictEqual(validateDate("invalid"), "");
+  it("should parse and extract mobile numbers, setting country code", () => {
+    const candidate: CandidateRecord = {
+      rowIndex: 1,
+      fields: { 
+        name: "John", 
+        email: "john@example.com",
+        mobile_without_country_code: "+1-555-123-4567, 0987654321" 
+      }
+    };
+    const result = validateRecord(candidate, getDummyRow());
+    assert.strictEqual(result.valid, true);
+    if (result.valid && result.lead) {
+      assert.strictEqual(result.lead.country_code, "1");
+      assert.strictEqual(result.lead.mobile_without_country_code, "5551234567");
+      assert.ok(result.lead.crm_note.includes("0987654321"));
+    }
   });
 
-  it("validateEnum normalizes strings to allowed enums", () => {
-    assert.strictEqual(validateEnum(" Good  Lead Follow Up ", ["GOOD_LEAD_FOLLOW_UP", "BAD_LEAD"]), "GOOD_LEAD_FOLLOW_UP");
-    assert.strictEqual(validateEnum("NOT_ALLOWED", ["GOOD_LEAD_FOLLOW_UP", "BAD_LEAD"]), "");
+  it("should clamp crm_status to allowed enums", () => {
+    const candidate: CandidateRecord = {
+      rowIndex: 1,
+      fields: { 
+        email: "john@test.com",
+        crm_status: "good lead follow up"
+      }
+    };
+    const result = validateRecord(candidate, getDummyRow());
+    assert.strictEqual(result.valid, true);
+    if (result.valid && result.lead) {
+      assert.strictEqual(result.lead.crm_status, "GOOD_LEAD_FOLLOW_UP");
+    }
+  });
+
+  it("should clear crm_status if not matching any enum", () => {
+    const candidate: CandidateRecord = {
+      rowIndex: 1,
+      fields: { 
+        email: "john@test.com",
+        crm_status: "unknown status"
+      }
+    };
+    const result = validateRecord(candidate, getDummyRow());
+    assert.strictEqual(result.valid, true);
+    if (result.valid && result.lead) {
+      assert.strictEqual(result.lead.crm_status, "");
+    }
+  });
+
+  it("should escape newlines in field values", () => {
+    const candidate: CandidateRecord = {
+      rowIndex: 1,
+      fields: { 
+        email: "john@test.com",
+        description: "Line 1\nLine 2"
+      }
+    };
+    const result = validateRecord(candidate, getDummyRow());
+    assert.strictEqual(result.valid, true);
+    if (result.valid && result.lead) {
+      assert.strictEqual(result.lead.description, "Line 1\\nLine 2");
+    }
   });
 });

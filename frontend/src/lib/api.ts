@@ -9,12 +9,14 @@ export class ApiError extends Error {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
-export async function importCsv(file: File): Promise<ImportResult> {
+export async function importCsv(file: File, jobId?: string): Promise<ImportResult> {
   const formData = new FormData();
   formData.append("file", file);
 
+  const url = jobId ? `${API_BASE}/api/import?jobId=${jobId}` : `${API_BASE}/api/import`;
+
   try {
-    const res = await fetch(`${API_BASE}/api/import`, {
+    const res = await fetch(url, {
       method: "POST",
       body: formData, // do not set Content-Type, fetch sets it automatically with boundary
     });

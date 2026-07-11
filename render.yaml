@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: groweasy-csv-importer-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PORT
+        value: 3001
+      - key: CORS_ORIGIN
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+    rootDir: backend

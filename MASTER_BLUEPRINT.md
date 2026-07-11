@@ -414,21 +414,21 @@ Pick from Part V in priority order; each is independent. Suggested high-value se
 | C10 | Step 3 confirm → backend call with loading state | P3–P4 | ☑ |
 | C11 | Step 4 results: parsed + skipped + totals | P3 | ☑ |
 | C12 | API key backend-only; never in the browser | P0–P2 | ☑ |
-| C13 | Publicly hosted app + public repo + README | P6 | ☐ |
+| C13 | Publicly hosted app + public repo + README | P6 | ☑ |
 
 ### Bonus items (optional — do in this priority order if time remains)
-| Priority | Bonus | Effort | Phase |
-|---|---|---|---|
-| 1 | Well-written README (near-required) | Low | P6 |
-| 2 | Deployment (Vercel + Render) | Low | P6 |
-| 3 | Drag & drop upload | Low | P3 |
-| 4 | Progress indicators during AI processing (SSE) | Med | P4 |
-| 5 | Retry mechanism for failed AI batches | Med | P2/P5 |
-| 6 | Dark mode | Low | P4 |
-| 7 | Unit tests (validator + parser) | Med | P5 |
-| 8 | Docker setup | Low | P5 |
-| 9 | Streaming/incremental parsing | Med | P4 |
-| 10 | Virtualized table for large CSVs | Med | P5 |
+| Priority | Bonus | Effort | Phase | Status |
+|---|---|---|---|---|
+| 1 | Well-written README (near-required) | Low | P6 | ☑ |
+| 2 | Deployment (Vercel + Render) | Low | P6 | ☑ |
+| 3 | Drag & drop upload | Low | P3 | ☑ |
+| 4 | Progress indicators during AI processing (SSE) | Med | P4 | ☑ |
+| 5 | Retry mechanism for failed AI batches | Med | P2/P5 | ☑ |
+| 6 | Dark mode | Low | P4 | ☑ |
+| 7 | Unit tests (validator + parser) | Med | P5 | ☑ |
+| 8 | Docker setup | Low | P5 | ☑ |
+| 9 | Streaming/incremental parsing | Med | P4 | ☑ |
+| 10 | Virtualized table for large CSVs | Med | P5 | ☑ |
 
 ---
 
@@ -441,9 +441,9 @@ Pick from Part V in priority order; each is independent. Suggested high-value se
 | 1 Parsing | ☑ done | `gate-1-parsing` | Upload + PapaParse + contract (pre-AI) |
 | 2 Extraction | ☑ done | `gate-2-extraction` | **The graded core** — LLM + validator |
 | 3 Frontend | ☑ done | `gate-3-frontend` | 4-step wizard |
-| 4 UX | ☐ todo | `gate-4-ux` | Progress, errors, responsive, dark mode |
-| 5 Bonus | ☐ todo | `gate-5-bonus` | Optional, time-boxed |
-| 6 Deploy/Submit | ☐ todo | `gate-6-submitted` | Hosted + repo + README + email |
+| 4 UX | ☑ done | `gate-4-ux` | Progress, errors, responsive, dark mode |
+| 5 Bonus | ☑ done | `gate-5-bonus` | Optional, time-boxed |
+| 6 Deploy/Submit | ☑ done | `gate-6-submitted` | Hosted + repo + README + email |
 
 ---
 

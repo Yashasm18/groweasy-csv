@@ -51,10 +51,10 @@ export function PreviewStep({ file, onConfirm, onCancel }: PreviewStepProps) {
   }
 
   return (
-    <div className="w-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+    <div className="w-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 h-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/50 dark:bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-gray-200/50 dark:border-white/10 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl">
+          <div className="p-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl shadow-inner">
             <FileText className="w-6 h-6" />
           </div>
           <div>
@@ -70,21 +70,23 @@ export function PreviewStep({ file, onConfirm, onCancel }: PreviewStepProps) {
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={onCancel}
-            className="flex-1 sm:flex-none px-4 py-2.5 rounded-full font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="flex-1 sm:flex-none px-6 py-2.5 rounded-full font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={() => onConfirm(data, columns)}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-medium text-white bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg transition-all"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-2.5 rounded-full font-medium text-white bg-gray-900 hover:bg-black dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 shadow-md hover:shadow-lg transition-all"
           >
             <Play className="w-4 h-4 fill-current" />
-            Confirm Import
+            Start Import
           </button>
         </div>
       </div>
 
-      <DataTable columns={columns} data={data} maxRows={100} />
+      <div className="flex-1 min-h-0 bg-white/50 dark:bg-white/5 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+        <DataTable columns={columns} data={data} maxRows={100} />
+      </div>
     </div>
   );
 }

@@ -1,49 +1,76 @@
 # GrowEasy AI CSV Importer
 
-An AI-powered CSV importer: upload **any** CRM lead CSV (Facebook export, Google Ads, Excel, real-estate CRM dump — no fixed columns), and it intelligently maps every row into a standard **15-field CRM schema** using an LLM, validates and cleans the result deterministically, and shows it through a 4-step web UI.
+An intelligent, AI-powered CSV importer built for CRM migrations. Upload **any** lead CSV—Facebook ads exports, Google Ads exports, real estate dumps—and the application will intelligently map every row to a standardized 15-field CRM schema using Google Gemini. 
 
-**Approach in one line:** *LLM-led, code-guarded* — the LLM does the semantic mapping (arbitrary columns → schema, free text → enums); deterministic code owns the guarantees (validation, enum clamping, the skip rule, multi-email/phone consolidation, date checks).
+## Features
 
-> This repository currently sits at its **pre-build blueprint state**: the specification docs and directory scaffold are in place; the `backend/` and `frontend/` apps are created in the build phases. Read `MASTER_BLUEPRINT.md` top-to-bottom and build **one full phase per session**.
+- **No Template Required**: Automatically understands arbitrary column headers and data formats.
+- **LLM-Led Mapping**: Uses Google Gemini to semantically map fields and infer data.
+- **Deterministic Validation**: Code-guarded rules enforce enums (e.g., `GOOD_LEAD_FOLLOW_UP`), handle the absolute skip rule (skips rows with no email AND no mobile), and consolidate multiple emails/phones into `crm_note`.
+- **High Performance UI**: Built with Next.js, featuring a beautiful glassmorphism design and a fully **virtualized data table** capable of rendering 10,000+ row CSVs without locking the browser.
+- **Progressive Streaming**: Server-Sent Events (SSE) provide real-time parsing progress updates in the UI.
 
-## What this project does
-1. Accepts any valid CSV, no fixed column assumptions (drag-drop or file picker).
-2. Previews the raw data in a scrollable, sticky-header table — no AI yet.
-3. On confirm, sends rows to an LLM **in batches** for intelligent field mapping.
-4. Validates every record deterministically: enforces the two enums, the skip rule (no email & no mobile → skipped), first-email/phone-wins with extras rolled into `crm_note`, `new Date()` date validity, and `\n` escaping.
-5. Returns and displays parsed records + skipped records + totals.
+## Architecture
 
-## The 15 fields
-`created_at, name, email, country_code, mobile_without_country_code, company, city, state, country, lead_owner, crm_status, crm_note, data_source, possession_time, description`
-- `crm_status` ∈ `{GOOD_LEAD_FOLLOW_UP, DID_NOT_CONNECT, BAD_LEAD, SALE_DONE}` or `""`.
-- `data_source` ∈ `{leads_on_demand, meridian_tower, eden_park, varah_swamy, sarjapur_plots}` or `""` (blank when unsure).
+- **Frontend**: Next.js 14 (App Router), Tailwind CSS, Framer Motion, `@tanstack/react-virtual`
+- **Backend**: Node.js, Express, TypeScript, `papaparse`, `@google/genai`
+- **Infrastructure**: Docker Compose for local development, ready for Vercel (Frontend) and Render (Backend).
 
-## Stack
-Next.js (App Router) + TypeScript + Tailwind on the frontend · Node.js + Express + TypeScript on the backend · Google Gemini for field mapping (behind a swappable `LlmProvider`) · PapaParse for CSV.
+## Running Locally (Docker)
 
-## How to work this repo (for the building agent)
-Build **one full phase per session**, respecting the gates in `MASTER_BLUEPRINT.md` Part IV:
+The easiest way to run the application is using Docker Compose.
+
+1. Clone the repository.
+2. Create a `.env` file in the `backend/` directory:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   PORT=3001
+   CORS_ORIGIN=http://localhost:3000
+   ```
+3. Run `docker-compose up --build` from the root directory.
+4. Access the frontend at `http://localhost:3000`.
+
+## Running Locally (Manual)
+
+**Backend:**
+```bash
+cd backend
+npm install
+npm run dev
 ```
-Phase 0 Foundation → 1 CSV Parsing → 2 Extraction Core (the graded heart)
-      → 3 Frontend (4-step wizard) → 4 UX/progress/dark-mode → 5 Bonuses → 6 Deploy & Submit
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
 ```
-**Build the backend extraction core (Phases 0–2) and prove it on the four `docs/sample-data/` CSVs before building any UI.** A plain UI over a correct extractor passes; a beautiful UI over a broken one fails.
 
-At the start of each session, paste the session prompt from `MASTER_BLUEPRINT.md` → "HOW TO USE THIS DOCUMENT".
+## Running Tests
+The backend uses Node's native test runner to test the extraction and validation logic.
+```bash
+cd backend
+npm test
+```
 
-## Documents
-| File | Purpose |
-|---|---|
-| `MASTER_BLUEPRINT.md` | The full build spec: ground rules, locked decisions, technical reference, phase-by-phase program with acceptance criteria. **Start here.** |
-| `docs/ROADBLOCKS.md` | Every realistic failure mode and its fix. **Read the moment anything breaks.** |
-| `docs/PROMPT_ENGINEERING.md` | The extraction prompt, response schema, and few-shot examples — the graded core. |
-| `docs/deep_dives/01_..._Backend_Extraction_Pipeline.md` | Parser, LLM client, extractor, validator, full API contract, SSE. |
-| `docs/deep_dives/02_..._Frontend_Workflow.md` | The 4 steps, state machine, tables, progress, dark mode. |
-| `docs/deep_dives/03_..._Deployment_and_Submission.md` | Vercel + Render, env vars, cold-start, README, the submission email. |
-| `docs/PROGRESS.md` | Session-by-session build log — update every session. |
-| `docs/sample-data/` | Four realistic CSVs to build and self-test against. |
+## Deployment
 
-## Deliverables (the assignment)
-A publicly hosted app URL + a public GitHub repo URL + a README, emailed to **varun@groweasy.ai**, position stated (Intern / Full-Time). **Deadline: 12 July 2026.**
+### Deploying the Backend (Render)
+1. Push this repository to GitHub.
+2. Go to Render.com and create a new **Web Service**.
+3. Select this repository. The `render.yaml` blueprint will automatically configure the build and start commands (`npm install && npm run build` -> `npm start`).
+4. In the Render dashboard, set the Environment Variables:
+   - `GEMINI_API_KEY`: Your Gemini API Key
+   - `CORS_ORIGIN`: The URL of your deployed frontend (e.g., `https://my-frontend.vercel.app`)
 
-> Once built and deployed, the "How to work this repo" section above is replaced by the public-facing setup + live-demo README described in `docs/deep_dives/03` Phase 6.
+### Deploying the Frontend (Vercel)
+1. Go to Vercel and create a new Project from your GitHub repository.
+2. Set the Framework Preset to **Next.js**.
+3. Set the Root Directory to `frontend`.
+4. In the Environment Variables, add:
+   - `NEXT_PUBLIC_API_BASE_URL`: The URL of your deployed backend (e.g., `https://groweasy-backend.onrender.com`)
+5. Deploy.
+
+---
+
+*Built with precision for GrowEasy.*
