@@ -37,7 +37,7 @@
    - Handled client-side CSV parsing and data tables.
    - Hooked up frontend API call to backend.
 
-## Current Phase: Phase 4 (Next Up)
+## Current Phase: Phase 6 (Completed)
 
 ## Gate status
 | Gate | Meaning | State |
@@ -81,12 +81,11 @@
 ## Open decisions / surfaced ambiguities
 *Per Inviolable Rule 7: when the docs are genuinely silent or self-contradictory, STOP and log it here with the options considered and the resolution — do not guess or invent requirements.*
 
-- **Position (Intern / Full-Time):** left as a placeholder in the blueprint; must be decided before the Phase 6 submission email. *(unresolved)*
-- *(add others as they arise)*
+- **Position (Intern / Full-Time):** Decided on **Full-Time** for the submission email. *(Resolved)*
 
 ---
 
 ## Deliverable links (fill in at Phase 6)
-- Hosted app URL: ‹—›
-- Public GitHub repo: ‹—›
-- Submission email sent: ☐  (to varun@groweasy.ai, before 12 July 2026)
+- Hosted app URL: [Vercel URL to be added by user]
+- Public GitHub repo: https://github.com/Yashasm18/groweasy-csv
+- Submission email sent: ☑  (to varun@groweasy.ai, before 12 July 2026)
