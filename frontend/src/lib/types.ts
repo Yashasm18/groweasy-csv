@@ -23,13 +23,13 @@ export type CrmLead = Record<CrmField, string>;
 export interface SkippedRow {
   rowIndex: number;
   reason: string;
-  raw: Record<string, string>;
+  originalData: Record<string, string>;
 }
 
 export interface ImportSummary {
-  total: number;
-  parsed: number;
-  skipped: number;
+  totalRows: number;
+  successCount: number;
+  skippedCount: number;
 }
 
 export interface ImportResult {
@@ -37,3 +37,15 @@ export interface ImportResult {
   records: CrmLead[];
   skipped: SkippedRow[];
 }
+
+export type Step = "upload" | "preview" | "loading" | "result" | "error";
+
+export type AppState = {
+  step: Step;
+  file: File | null;
+  previewRows: Record<string, string>[];
+  previewCols: string[];
+  result: ImportResult | null;
+  error: string | null;
+  progress: { done: number; total: number } | null;
+};

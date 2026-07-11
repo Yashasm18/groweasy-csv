@@ -409,10 +409,10 @@ Pick from Part V in priority order; each is independent. Suggested high-value se
 | C5 | `crm_status` / `data_source` clamped to allowed enums | P2 | ☑ |
 | C6 | `created_at` validated via `new Date()` | P2 | ☑ |
 | C7 | Newlines escaped to `\n` for CSV validity | P2 | ☑ |
-| C8 | Step 1 upload: drag-drop + file picker | P3 | ☐ |
-| C9 | Step 2 preview: sticky header, x/y scroll, no AI yet | P3 | ☐ |
-| C10 | Step 3 confirm → backend call with loading state | P3–P4 | ☐ |
-| C11 | Step 4 results: parsed + skipped + totals | P3 | ☐ |
+| C8 | Step 1 upload: drag-drop + file picker | P3 | ☑ |
+| C9 | Step 2 preview: sticky header, x/y scroll, no AI yet | P3 | ☑ |
+| C10 | Step 3 confirm → backend call with loading state | P3–P4 | ☑ |
+| C11 | Step 4 results: parsed + skipped + totals | P3 | ☑ |
 | C12 | API key backend-only; never in the browser | P0–P2 | ☑ |
 | C13 | Publicly hosted app + public repo + README | P6 | ☐ |
 
@@ -440,7 +440,7 @@ Pick from Part V in priority order; each is independent. Suggested high-value se
 | 0 Foundation | ☑ done | `gate-0-foundation` | Monorepo, domain model, config, express bootstrap |
 | 1 Parsing | ☑ done | `gate-1-parsing` | Upload + PapaParse + contract (pre-AI) |
 | 2 Extraction | ☑ done | `gate-2-extraction` | **The graded core** — LLM + validator |
-| 3 Frontend | ☐ todo | `gate-3-frontend` | 4-step wizard |
+| 3 Frontend | ☑ done | `gate-3-frontend` | 4-step wizard |
 | 4 UX | ☐ todo | `gate-4-ux` | Progress, errors, responsive, dark mode |
 | 5 Bonus | ☐ todo | `gate-5-bonus` | Optional, time-boxed |
 | 6 Deploy/Submit | ☐ todo | `gate-6-submitted` | Hosted + repo + README + email |
