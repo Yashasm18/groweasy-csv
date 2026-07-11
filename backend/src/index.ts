@@ -28,6 +28,9 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: "Internal Server Error" });
 });
 
-app.listen(config.PORT, () => {
+import { initDb } from "./util/db";
+
+app.listen(config.PORT, async () => {
+  await initDb();
   logger.info(`Backend listening on port ${config.PORT}`);
 });

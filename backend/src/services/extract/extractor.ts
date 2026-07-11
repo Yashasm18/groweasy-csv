@@ -184,40 +184,51 @@ export async function extractAndValidateStream(
   let totalRows = 0;
   let doneRows = 0;
 
-  // We await each batch sequentially to control memory entirely and avoid overloading the LLM.
-  // We could implement an async queue for concurrency=2, but sequential is safest for strict memory.
+  // We use a Set to track in-flight batch promises for controlled concurrency.
+  const inFlight = new Set<Promise<void>>();
   
   await parseCsvStream(filePath, BATCH_SIZE, async (batch: RawRow[]) => {
     totalRows += batch.length;
     
-    const candidates = await processBatch(batch, llm);
-    
-    const candidateMap = new Map<number, CandidateRecord>();
-    candidates.forEach(c => candidateMap.set(c.rowIndex, c));
-
-    for (const row of batch) {
-      let candidate = candidateMap.get(row.rowIndex);
-      if (!candidate) {
-        candidate = deterministicFallbackMap([row])[0];
-      }
+    const promise = (async () => {
+      const candidates = await processBatch(batch, llm);
       
-      const valResult = validateRecord(candidate, row);
-      if (valResult.valid && valResult.lead) {
-        records.push(valResult.lead);
-      } else {
-        skipped.push({
-          rowIndex: row.rowIndex,
-          reason: valResult.reason || "Validation failed",
-          originalData: row.cells
-        });
-      }
-    }
+      const candidateMap = new Map<number, CandidateRecord>();
+      candidates.forEach(c => candidateMap.set(c.rowIndex, c));
 
-    doneRows += batch.length;
-    if (onProgress) {
-      onProgress(doneRows); // Note: total is unknown during stream
+      for (const row of batch) {
+        let candidate = candidateMap.get(row.rowIndex);
+        if (!candidate) {
+          candidate = deterministicFallbackMap([row])[0];
+        }
+        
+        const valResult = validateRecord(candidate, row);
+        if (valResult.valid && valResult.lead) {
+          records.push(valResult.lead);
+        } else {
+          skipped.push({
+            rowIndex: row.rowIndex,
+            reason: valResult.reason || "Validation failed",
+            originalData: row.cells
+          });
+        }
+      }
+
+      doneRows += batch.length;
+      if (onProgress) {
+        onProgress(doneRows); 
+      }
+    })();
+
+    inFlight.add(promise);
+    promise.finally(() => inFlight.delete(promise));
+
+    if (inFlight.size >= LLM_CONCURRENCY) {
+      await Promise.race(inFlight);
     }
   });
+
+  await Promise.all(inFlight);
 
   return {
     summary: {

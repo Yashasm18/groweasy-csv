@@ -10,6 +10,7 @@ export const config = {
   MAX_FILE_MB: parseInt(process.env.MAX_FILE_MB || "5", 10),
   MAX_ROWS: parseInt(process.env.MAX_ROWS || "1000", 10),
   CORS_ORIGIN: process.env.CORS_ORIGIN || "http://localhost:3000",
+  DATABASE_URL: process.env.DATABASE_URL || "",
 };
 
 if (!config.GEMINI_API_KEY) {

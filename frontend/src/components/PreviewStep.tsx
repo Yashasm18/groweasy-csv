@@ -19,6 +19,7 @@ export function PreviewStep({ file, onConfirm, onCancel }: PreviewStepProps) {
     Papa.parse<Record<string, string>>(file, {
       header: true,
       skipEmptyLines: "greedy",
+      preview: 100, // Limit to 100 rows to prevent OOM crashes on large files
       complete: (results) => {
         if (results.errors.length > 0) {
           console.warn("PapaParse errors:", results.errors);
@@ -62,7 +63,7 @@ export function PreviewStep({ file, onConfirm, onCancel }: PreviewStepProps) {
               Preview Data
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Found <span className="font-semibold text-gray-700 dark:text-gray-300">{data.length} rows</span> and <span className="font-semibold text-gray-700 dark:text-gray-300">{columns.length} columns</span> in {file.name}.
+              Previewing first <span className="font-semibold text-gray-700 dark:text-gray-300">{data.length} rows</span> and <span className="font-semibold text-gray-700 dark:text-gray-300">{columns.length} columns</span> in {file.name}.
             </p>
           </div>
         </div>

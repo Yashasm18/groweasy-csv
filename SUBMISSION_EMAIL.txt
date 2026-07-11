@@ -6,7 +6,7 @@ Please find my submission for the AI CSV Importer assignment.
 
 • Live app:   [Replace with your Vercel URL, e.g. https://groweasy-csv-importer.vercel.app]
               (Note: First load may take ~30s as the free-tier backend wakes from sleep)
-• GitHub:     [Replace with your GitHub repo URL, e.g. https://github.com/yashas/groweasy-csv-importer]
+• GitHub:     https://github.com/Yashasm18/groweasy-csv
 • Position:   Full-Time
 • Stack:      Next.js + Node/Express + TypeScript, Google Gemini for semantic field mapping, 
               with a strict deterministic validation layer (enums, skip rule, multi-email/phone consolidation).

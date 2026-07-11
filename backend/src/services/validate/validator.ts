@@ -136,8 +136,10 @@ export function validateDate(rawStr: string): string {
 export function validateEnum<T extends string>(rawStr: string, allowedValues: T[]): T | "" {
   if (!rawStr) return "";
   const normalized = rawStr.trim().toUpperCase().replace(/\s+/g, "_");
-  if (allowedValues.includes(normalized as T)) {
-    return normalized as T;
+  
+  const match = allowedValues.find(val => val.toUpperCase() === normalized);
+  if (match) {
+    return match;
   }
   return "";
 }
@@ -204,9 +206,7 @@ export function validateRecord(candidate: CandidateRecord, originalRow: RawRow):
 
   // Enums
   const crm_status = validateEnum(c.crm_status || "", ["GOOD_LEAD_FOLLOW_UP", "DID_NOT_CONNECT", "BAD_LEAD", "SALE_DONE"]);
-  // data_source allowed: leads_on_demand | meridian_tower | eden_park | varah_swamy | sarjapur_plots
-  const data_source = validateEnum(c.data_source || "", ["LEADS_ON_DEMAND", "MERIDIAN_TOWER", "EDEN_PARK", "VARAH_SWAMY", "SARJAPUR_PLOTS"]);
-  const final_data_source = data_source.toLowerCase(); // schema says lowercase for data_source! Wait, prompt says leads_on_demand.
+  const data_source = validateEnum(c.data_source || "", ["leads_on_demand", "meridian_tower", "eden_park", "varah_swamy", "sarjapur_plots"]);
   
   const created_at = validateDate(c.created_at || "");
 
@@ -241,7 +241,7 @@ export function validateRecord(candidate: CandidateRecord, originalRow: RawRow):
     lead_owner: escapeNewlines(c.lead_owner || ""),
     crm_status: crm_status as any,
     crm_note,
-    data_source: final_data_source,
+    data_source: data_source as any,
     possession_time: escapeNewlines(c.possession_time || ""),
     description: escapeNewlines(c.description || ""),
   };

@@ -3,9 +3,10 @@ import { Loader2, Database, Sparkles, CheckCircle2 } from "lucide-react";
 
 interface LoadingStepProps {
   jobId?: string;
+  onError?: (err: string) => void;
 }
 
-export function LoadingStep({ jobId }: LoadingStepProps) {
+export function LoadingStep({ jobId, onError }: LoadingStepProps) {
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState(0);
 
@@ -25,7 +26,13 @@ export function LoadingStep({ jobId }: LoadingStepProps) {
           return;
         }
 
-        const currentProgress = Math.round((data.done / data.total) * 100);
+        let currentProgress = Math.round((data.done / data.total) * 100);
+        
+        // Clamp to 99% while streaming to avoid premature 100% jumping
+        if (currentProgress >= 100) {
+           currentProgress = 99;
+        }
+        
         setProgress(currentProgress);
 
         if (currentProgress < 100 && currentProgress > 0) {
@@ -36,8 +43,15 @@ export function LoadingStep({ jobId }: LoadingStepProps) {
       } catch (err) {}
     };
 
+    es.onerror = (err) => {
+      es.close();
+      if (onError) {
+        onError("Lost connection to the server during processing. The import may have failed.");
+      }
+    };
+
     return () => es.close();
-  }, [jobId]);
+  }, [jobId, onError]);
 
   const stages = [
     { label: "Parsing CSV and chunking rows...", icon: Database },

@@ -8,6 +8,8 @@ import crypto from "crypto";
 import os from "os";
 import fs from "fs";
 import readline from "readline";
+import Papa from "papaparse";
+import { saveLeadsToDb } from "../util/db";
 
 export const importRouter = Router();
 
@@ -82,15 +84,23 @@ importRouter.post("/", upload.single("file"), async (req: Request, res: Response
     }
 
     // Calculate total rows quickly for accurate progress bar
-    let totalLines = 0;
-    const rl = readline.createInterface({
-      input: fs.createReadStream(tempFilePath),
-      crlfDelay: Infinity
+    let estimatedTotal = 0;
+    await new Promise<void>((resolve, reject) => {
+      Papa.parse(fs.createReadStream(tempFilePath as string), {
+        header: true,
+        skipEmptyLines: "greedy",
+        step: function() {
+          estimatedTotal++;
+        },
+        complete: function() {
+          resolve();
+        },
+        error: function(error: any) {
+          reject(error);
+        }
+      });
     });
-    for await (const line of rl) {
-      if (line.trim()) totalLines++;
-    }
-    const estimatedTotal = Math.max(1, totalLines - 1);
+    estimatedTotal = Math.max(1, estimatedTotal);
 
     // Phase 2: AI Extraction Core using STREAMING parser
     const extractionResult = await extractAndValidateStream(tempFilePath, llmProvider, (done) => {
@@ -110,6 +120,15 @@ importRouter.post("/", upload.single("file"), async (req: Request, res: Response
       success: extractionResult.summary.successCount,
       skipped: extractionResult.summary.skippedCount
     });
+
+    // Save successful leads to the database
+    if (extractionResult.records.length > 0) {
+      try {
+        await saveLeadsToDb(extractionResult.records);
+      } catch (dbError: any) {
+        logger.error("Failed to persist leads to database, but returning CSV to user anyway", { error: dbError.message });
+      }
+    }
 
     res.status(200).json(extractionResult);
   } catch (error: any) {

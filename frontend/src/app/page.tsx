@@ -80,7 +80,7 @@ export default function Home() {
 
   const stepMap: Record<string, number> = { upload: 0, preview: 1, loading: 2, result: 3, error: 2 };
   const currentStepIdx = stepMap[state.step];
-  const steps = ["1. Select File", "2. Map Columns", "3. Validate Data", "4. Import"];
+  const steps = ["1. Select File", "2. Preview Data", "3. Validate Data", "4. Import"];
 
   return (
     <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#0a0a0a] transition-colors duration-300 relative overflow-hidden flex flex-col">
@@ -109,11 +109,6 @@ export default function Home() {
           >
             {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
-          <div className="hidden sm:flex items-center space-x-6 text-sm font-medium text-gray-600 dark:text-gray-400">
-            <a href="#" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Dashboard</a>
-            <a href="#" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">History</a>
-            <a href="#" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Support</a>
-          </div>
         </div>
       </nav>
 
@@ -195,7 +190,10 @@ export default function Home() {
               )}
 
               {state.step === "loading" && (
-                <LoadingStep jobId={state.jobId} />
+                <LoadingStep 
+                  jobId={state.jobId} 
+                  onError={(err) => setState((s) => ({ ...s, step: "error", error: err }))} 
+                />
               )}
 
               {state.step === "result" && state.result && (
